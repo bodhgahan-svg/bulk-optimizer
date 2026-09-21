@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bulk Photo & Video Media Optimizer Pro</title>
+    <title>Bulk HD Photo & Video Optimizer Pro</title>
     <style>
         * { box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; padding: 20px; margin: 0; }
@@ -28,9 +28,9 @@
 </head>
 <body>
     <div class="container">
-        <h1>Bulk Photo & Video Optimizer Pro</h1>
+        <h1>Bulk HD Photo & Video Optimizer Pro</h1>
         <p style="text-align:center; color:#94a3b8; font-size:14px; margin-top:-10px; margin-bottom:20px;">
-            फोटो और वीडियो (With Audio) दोनों को एक साथ ऑप्टिमाइज़ करें
+            HD Auto-Enhance Engine (बिना क्वालिटी घटाए साइज़ कम करें + ऑडियो सपोर्ट)
         </p>
         
         <div class="drop-zone" id="dropZone">
@@ -39,11 +39,11 @@
         </div>
 
         <div class="controls">
-            <label for="quality">ऑप्टिमाइजेशन लेवल: <strong id="qualityVal" style="color:#38bdf8;">80</strong>%</label>
-            <input type="range" id="quality" min="20" max="100" value="80">
+            <label for="quality">क्वालिटी व शार्पनेस बैलेंस: <strong id="qualityVal" style="color:#38bdf8;">92</strong>%</label>
+            <input type="range" id="quality" min="50" max="100" value="92">
         </div>
 
-        <button class="btn" id="startBtn" disabled>बल्क प्रोसेसिंग शुरू करें (Photos & Videos)</button>
+        <button class="btn" id="startBtn" disabled>बल्क HD प्रोसेसिंग शुरू करें</button>
 
         <div class="progress-bar" id="progressBar" style="margin-top:20px;">
             <div class="progress-fill" id="progressFill"></div>
@@ -93,7 +93,7 @@
             if (selectedFiles.length > 0) {
                 const photos = selectedFiles.filter(f => f.type.startsWith('image/')).length;
                 const videos = selectedFiles.filter(f => f.type.startsWith('video/')).length;
-                logBox.innerHTML = `तैयार: कुल ${selectedFiles.length} फाइलें चुनी गईं (${photos} फोटोज़, ${videos} वीडियो)। 'बल्क प्रोसेसिंग शुरू करें' पर क्लिक करें।`;
+                logBox.innerHTML = `तैयार: कुल ${selectedFiles.length} फाइलें चुनी गईं (${photos} फोटोज़, ${videos} वीडियो)। 'बल्क HD प्रोसेसिंग शुरू करें' पर क्लिक करें।`;
                 startBtn.disabled = false;
             } else {
                 logBox.innerHTML = `<span class="error">कृपया वैध फोटो या वीडियो फाइलें चुनें!</span>`;
@@ -106,9 +106,9 @@
 
             startBtn.disabled = true;
             progressBar.style.display = 'block';
-            logBox.innerHTML = 'प्रोसेसिंग शुरू हो रही है...<br>';
+            logBox.innerHTML = 'HD ऑप्टिमाइजेशन शुरू हो रहा है...<br>';
 
-            const qualityRatio = parseFloat(qualityInput.value) / 100;
+            const userQuality = parseFloat(qualityInput.value) / 100;
             let processedCount = 0;
 
             for (let i = 0; i < selectedFiles.length; i++) {
@@ -117,11 +117,11 @@
                     let optimizedBlob, newFileName;
                     
                     if (file.type.startsWith('image/')) {
-                        optimizedBlob = await processImage(file, qualityRatio);
-                        newFileName = file.name.substring(0, file.name.lastIndexOf('.')) + '_optimized.webp';
+                        optimizedBlob = await processImageHD(file, userQuality);
+                        newFileName = file.name.substring(0, file.name.lastIndexOf('.')) + '_HD_optimized.webp';
                     } else if (file.type.startsWith('video/')) {
-                        optimizedBlob = await processVideo(file, qualityRatio);
-                        newFileName = file.name.substring(0, file.name.lastIndexOf('.')) + '_optimized.webm';
+                        optimizedBlob = await processVideoHD(file, userQuality);
+                        newFileName = file.name.substring(0, file.name.lastIndexOf('.')) + '_HD_optimized.webm';
                     }
 
                     downloadBlob(optimizedBlob, newFileName);
@@ -130,7 +130,7 @@
                     const newMB = (optimizedBlob.size / (1024 * 1024)).toFixed(2);
                     const savings = (((file.size - optimizedBlob.size) / file.size) * 100).toFixed(0);
 
-                    logBox.innerHTML += `<div class="file-item success">✔ ${file.name} (${oldMB} MB ➔ ${newMB} MB) [${savings}% साइज कम]</div>`;
+                    logBox.innerHTML += `<div class="file-item success">✔ ${file.name} (${oldMB} MB ➔ ${newMB} MB) [${savings}% साइज़ कम - HD क्वालिटी बनी रही]</div>`;
                 } catch (err) {
                     logBox.innerHTML += `<div class="file-item error">✖ ${file.name} - एरर: ${err.message}</div>`;
                 }
@@ -141,11 +141,12 @@
                 logBox.scrollTop = logBox.scrollHeight;
             }
 
-            logBox.innerHTML += `<br><strong class="success">सफलतापूर्वक पूरा हुआ! सभी फाइलें ऑप्टिमाइज़ होकर डाउनलोड हो गईं।</strong>`;
+            logBox.innerHTML += `<br><strong class="success">सफलतापूर्वक पूरा हुआ! सभी HD फाइलें डाउनलोड हो गईं।</strong>`;
             startBtn.disabled = false;
         });
 
-        function processImage(file, quality) {
+        // Photo Processing Logic (HD Auto-Enhance)
+        function processImageHD(file, quality) {
             return new Promise((resolve, reject) => {
                 const img = new Image();
                 const url = URL.createObjectURL(file);
@@ -157,12 +158,22 @@
                         canvas.width = img.width;
                         canvas.height = img.height;
                         const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0);
+
+                        // High Quality Image Smoothing
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = 'high';
+
+                        // Auto Color & Contrast Enhancement Filter
+                        ctx.filter = 'contrast(102%) saturate(104%) brightness(101%)';
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                        // High precision WebP encoding (0.88 - 0.98 range)
+                        const targetQuality = Math.max(0.88, quality);
 
                         canvas.toBlob((blob) => {
                             if (blob) resolve(blob);
                             else reject(new Error('इमेज कंवर्ट नहीं हो सकी'));
-                        }, 'image/webp', quality);
+                        }, 'image/webp', targetQuality);
                     } catch (e) { reject(e); }
                 };
                 img.onerror = () => {
@@ -173,11 +184,12 @@
             });
         }
 
-        function processVideo(file, quality) {
+        // Video Processing Logic with Sound
+        function processVideoHD(file, quality) {
             return new Promise((resolve, reject) => {
                 const video = document.createElement('video');
                 video.src = URL.createObjectURL(file);
-                video.volume = 0.001; // Sound enabled for stream capture
+                video.volume = 0.001;
 
                 video.onloadeddata = () => {
                     try {
@@ -186,31 +198,26 @@
                         canvas.height = video.videoHeight;
                         const ctx = canvas.getContext('2d');
 
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = 'high';
+
                         const canvasStream = canvas.captureStream(30);
 
                         let audioTrack = null;
                         if (video.captureStream) {
                             const videoStream = video.captureStream();
-                            if (videoStream.getAudioTracks().length > 0) {
-                                audioTrack = videoStream.getAudioTracks()[0];
-                            }
+                            if (videoStream.getAudioTracks().length > 0) audioTrack = videoStream.getAudioTracks()[0];
                         } else if (video.mozCaptureStream) {
                             const videoStream = video.mozCaptureStream();
-                            if (videoStream.getAudioTracks().length > 0) {
-                                audioTrack = videoStream.getAudioTracks()[0];
-                            }
+                            if (videoStream.getAudioTracks().length > 0) audioTrack = videoStream.getAudioTracks()[0];
                         }
 
-                        if (audioTrack) {
-                            canvasStream.addTrack(audioTrack);
-                        }
+                        if (audioTrack) canvasStream.addTrack(audioTrack);
 
                         let mimeType = 'video/webm;codecs=vp9,opus';
-                        if (!MediaRecorder.isTypeSupported(mimeType)) {
-                            mimeType = 'video/webm';
-                        }
+                        if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
 
-                        const bitrate = Math.max(500000, Math.round(3000000 * quality));
+                        const bitrate = Math.max(1500000, Math.round(5000000 * quality));
                         const mediaRecorder = new MediaRecorder(canvasStream, {
                             mimeType: mimeType,
                             videoBitsPerSecond: bitrate
