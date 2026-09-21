@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bulk HD Photo & Video Optimizer Pro</title>
+    <title>4K Ultra HD Bulk Media Optimizer</title>
     <style>
         * { box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; padding: 20px; margin: 0; }
@@ -28,9 +28,9 @@
 </head>
 <body>
     <div class="container">
-        <h1>Bulk HD Photo & Video Optimizer</h1>
+        <h1>4K Ultra HD Bulk Optimizer</h1>
         <p style="text-align:center; color:#94a3b8; font-size:14px; margin-top:-10px; margin-bottom:20px;">
-            फुल ड्यूरेशन, परफेक्ट ऑडियो और 80% तक साइज़ कम्प्रेशन
+            फोटो व वीडियो अपस्केलिंग और कम्प्रेशन इंजन
         </p>
         
         <div class="drop-zone" id="dropZone">
@@ -40,26 +40,26 @@
 
         <div class="controls">
             <div>
-                <label for="quality">क्वालिटी व शार्पनेस: <strong id="qualityVal" style="color:#38bdf8;">85</strong>%</label>
-                <input type="range" id="quality" min="50" max="100" value="85">
+                <label for="quality">क्वालिटी स्तर: <strong id="qualityVal" style="color:#38bdf8;">90</strong>%</label>
+                <input type="range" id="quality" min="60" max="100" value="90">
             </div>
             <div>
-                <label for="resolution">वीडियो रेजोल्यूशन (Max Limit):</label>
+                <label for="resolution">आउटपुट रेजोल्यूशन:</label>
                 <select id="resolution">
-                    <option value="original" selected>ओरिजिनल रेजोल्यूशन (HD)</option>
-                    <option value="1080">1080p (Full HD - रिकमेंडेड)</option>
-                    <option value="720">720p (Fast & Small Size)</option>
+                    <option value="original" selected>ओरिजिनल साइज (बेस्ट कम्प्रेशन)</option>
+                    <option value="4k">4K Ultra HD (3840x2160 Upscale)</option>
+                    <option value="1080">1080p Full HD</option>
                 </select>
             </div>
         </div>
 
-        <button class="btn" id="startBtn" disabled>बल्क प्रोसेसिंग शुरू करें</button>
+        <button class="btn" id="startBtn" disabled>प्रोसेसिंग शुरू करें</button>
 
         <div class="progress-bar" id="progressBar" style="margin-top:20px;">
             <div class="progress-fill" id="progressFill"></div>
         </div>
 
-        <h3 style="font-size:15px; margin-top:20px; color:#cbd5e1;">प्रोसेसिंग स्टेटस:</h3>
+        <h3 style="font-size:15px; margin-top:20px; color:#cbd5e1;">स्टेटस लॉग:</h3>
         <div class="log" id="logBox">कोई फाइल चुनी नहीं गई है...</div>
     </div>
 
@@ -91,9 +91,7 @@
         function handleFiles(files) {
             selectedFiles = Array.from(files).filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'));
             if (selectedFiles.length > 0) {
-                const photos = selectedFiles.filter(f => f.type.startsWith('image/')).length;
-                const videos = selectedFiles.filter(f => f.type.startsWith('video/')).length;
-                logBox.innerHTML = `तैयार: कुल ${selectedFiles.length} फाइलें चुनी गईं (${photos} फोटो, ${videos} वीडियो)।`;
+                logBox.innerHTML = `तैयार: कुल ${selectedFiles.length} फाइलें चुनी गईं।`;
                 startBtn.disabled = false;
             } else {
                 logBox.innerHTML = `<span class="error">वैध फोटो या वीडियो फाइलें चुनें!</span>`;
@@ -106,7 +104,7 @@
 
             startBtn.disabled = true;
             progressBar.style.display = 'block';
-            logBox.innerHTML = 'ऑप्टिमाइजेशन शुरू हो रहा है...<br>';
+            logBox.innerHTML = 'प्रोसेसिंग शुरू हो रही है...<br>';
 
             const qualityRatio = parseFloat(qualityInput.value) / 100;
             const resOption = resolutionSelect.value;
@@ -118,20 +116,19 @@
                     let optimizedBlob, newFileName;
                     
                     if (file.type.startsWith('image/')) {
-                        optimizedBlob = await processImageHD(file, qualityRatio);
-                        newFileName = file.name.substring(0, file.name.lastIndexOf('.')) + '_HD.webp';
+                        optimizedBlob = await processImageHD(file, qualityRatio, resOption);
+                        newFileName = file.name.substring(0, file.name.lastIndexOf('.')) + '_4K_HD.webp';
                     } else if (file.type.startsWith('video/')) {
                         optimizedBlob = await processVideoHD(file, qualityRatio, resOption);
-                        newFileName = file.name.substring(0, file.name.lastIndexOf('.')) + '_HD.webm';
+                        newFileName = file.name.substring(0, file.name.lastIndexOf('.')) + '_4K_HD.webm';
                     }
 
                     downloadBlob(optimizedBlob, newFileName);
                     
                     const oldMB = (file.size / (1024 * 1024)).toFixed(2);
                     const newMB = (optimizedBlob.size / (1024 * 1024)).toFixed(2);
-                    const savings = (((file.size - optimizedBlob.size) / file.size) * 100).toFixed(0);
 
-                    logBox.innerHTML += `<div class="file-item success">✔ ${file.name} (${oldMB} MB ➔ ${newMB} MB) [${savings}% साइज़ कम]</div>`;
+                    logBox.innerHTML += `<div class="file-item success">✔ ${file.name} (${oldMB} MB ➔ ${newMB} MB)</div>`;
                 } catch (err) {
                     logBox.innerHTML += `<div class="file-item error">✖ ${file.name} - एरर: ${err.message}</div>`;
                 }
@@ -141,27 +138,37 @@
                 logBox.scrollTop = logBox.scrollHeight;
             }
 
-            logBox.innerHTML += `<br><strong class="success">सभी फाइलें 100% सही ड्यूरेशन और साउंड के साथ कंवर्ट हो गईं!</strong>`;
+            logBox.innerHTML += `<br><strong class="success">प्रोसेसिंग सफलतापूर्वक पूरी हुई!</strong>`;
             startBtn.disabled = false;
         });
 
-        // Instant Photo Processing with Sharpness Filter
-        function processImageHD(file, quality) {
+        function processImageHD(file, quality, resOption) {
             return new Promise((resolve, reject) => {
                 const img = new Image();
                 const url = URL.createObjectURL(file);
 
                 img.onload = () => {
                     URL.revokeObjectURL(url);
+                    let w = img.width;
+                    let h = img.height;
+
+                    if (resOption === '4k') {
+                        w = 3840;
+                        h = Math.round((3840 / img.width) * img.height);
+                    } else if (resOption === '1080') {
+                        w = 1920;
+                        h = Math.round((1920 / img.width) * img.height);
+                    }
+
                     const canvas = document.createElement('canvas');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
+                    canvas.width = w;
+                    canvas.height = h;
                     const ctx = canvas.getContext('2d');
 
                     ctx.imageSmoothingEnabled = true;
                     ctx.imageSmoothingQuality = 'high';
-                    ctx.filter = 'contrast(102%) saturate(103%)';
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    ctx.filter = 'contrast(103%) saturate(104%)';
+                    ctx.drawImage(img, 0, 0, w, h);
 
                     canvas.toBlob((blob) => {
                         if (blob) resolve(blob);
@@ -173,31 +180,29 @@
             });
         }
 
-        // Full Duration & Audio Synced Video Processing
         function processVideoHD(file, quality, resOption) {
             return new Promise((resolve, reject) => {
                 const video = document.createElement('video');
                 video.src = URL.createObjectURL(file);
                 video.muted = false;
-                video.volume = 0.001; // Sound capture enabled
+                video.volume = 0.001;
 
                 video.onloadeddata = () => {
                     try {
-                        let targetWidth = video.videoWidth;
-                        let targetHeight = video.videoHeight;
+                        let w = video.videoWidth;
+                        let h = video.videoHeight;
 
-                        // Optional Resolution Scaling to Control Size
-                        if (resOption === '1080' && targetHeight > 1080) {
-                            targetWidth = Math.round((1080 / targetHeight) * targetWidth);
-                            targetHeight = 1080;
-                        } else if (resOption === '720' && targetHeight > 720) {
-                            targetWidth = Math.round((720 / targetHeight) * targetWidth);
-                            targetHeight = 720;
+                        if (resOption === '4k') {
+                            w = 3840;
+                            h = Math.round((3840 / video.videoWidth) * video.videoHeight);
+                        } else if (resOption === '1080') {
+                            w = 1920;
+                            h = Math.round((1920 / video.videoWidth) * video.videoHeight);
                         }
 
                         const canvas = document.createElement('canvas');
-                        canvas.width = targetWidth;
-                        canvas.height = targetHeight;
+                        canvas.width = w;
+                        canvas.height = h;
                         const ctx = canvas.getContext('2d');
 
                         ctx.imageSmoothingEnabled = true;
@@ -219,7 +224,7 @@
                         let mimeType = 'video/webm;codecs=vp9,opus';
                         if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
 
-                        const bitrate = Math.max(1200000, Math.round(3500000 * quality));
+                        const bitrate = resOption === '4k' ? 12000000 : Math.max(1200000, Math.round(3500000 * quality));
                         const mediaRecorder = new MediaRecorder(canvasStream, {
                             mimeType: mimeType,
                             videoBitsPerSecond: bitrate
@@ -244,7 +249,7 @@
                                 if (mediaRecorder.state !== 'inactive') mediaRecorder.stop();
                                 return;
                             }
-                            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                            ctx.drawImage(video, 0, 0, w, h);
                             requestAnimationFrame(renderFrame);
                         }
 
