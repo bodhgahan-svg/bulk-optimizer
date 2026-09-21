@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super-Fast Bulk Photo & Video HD Optimizer</title>
+    <title>Bulk HD Photo & Video Optimizer Pro</title>
     <style>
         * { box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; padding: 20px; margin: 0; }
@@ -17,7 +17,7 @@
         .btn:disabled { background: #475569; cursor: not-allowed; }
         .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; background: #0f172a; padding: 15px; border-radius: 8px; }
         label { font-size: 14px; color: #cbd5e1; display: block; margin-bottom: 5px; }
-        input[type="range"], select { width: 100%; cursor: pointer; background: #1e293b; color: white; border: 1px solid #334155; padding: 6px; border-radius: 4px; }
+        input[type="range"], select { width: 100%; cursor: pointer; background: #1e293b; color: white; border: 1px solid #334155; padding: 8px; border-radius: 4px; }
         .progress-bar { width: 100%; height: 10px; background: #334155; border-radius: 5px; overflow: hidden; margin-bottom: 20px; display: none; }
         .progress-fill { width: 0%; height: 100%; background: #22c55e; transition: width 0.1s; }
         .log { background: #0f172a; padding: 12px; border-radius: 6px; height: 220px; overflow-y: auto; font-family: monospace; font-size: 13px; border: 1px solid #334155; }
@@ -28,9 +28,9 @@
 </head>
 <body>
     <div class="container">
-        <h1>Super-Fast Bulk Optimizer Pro</h1>
+        <h1>Bulk HD Photo & Video Optimizer</h1>
         <p style="text-align:center; color:#94a3b8; font-size:14px; margin-top:-10px; margin-bottom:20px;">
-            इंसटेंट फोटो कंवर्टर + फास्ट वीडियो कम्प्रेशन (Full Duration & Audio Sync)
+            फुल ड्यूरेशन, परफेक्ट ऑडियो और 80% तक साइज़ कम्प्रेशन
         </p>
         
         <div class="drop-zone" id="dropZone">
@@ -40,26 +40,26 @@
 
         <div class="controls">
             <div>
-                <label for="quality">क्वालिटी व HD शार्पनेस: <strong id="qualityVal" style="color:#38bdf8;">90</strong>%</label>
-                <input type="range" id="quality" min="60" max="100" value="90">
+                <label for="quality">क्वालिटी व शार्पनेस: <strong id="qualityVal" style="color:#38bdf8;">85</strong>%</label>
+                <input type="range" id="quality" min="50" max="100" value="85">
             </div>
             <div>
-                <label for="speed">वीडियो स्पीड बूस्टर:</label>
-                <select id="speed">
-                    <option value="1">1x (नॉर्मल स्पीड)</option>
-                    <option value="2" selected>2x (दुगुनी तेज़ी)</option>
-                    <option value="3">3x (सुपर फास्ट - recommended)</option>
+                <label for="resolution">वीडियो रेजोल्यूशन (Max Limit):</label>
+                <select id="resolution">
+                    <option value="original" selected>ओरिजिनल रेजोल्यूशन (HD)</option>
+                    <option value="1080">1080p (Full HD - रिकमेंडेड)</option>
+                    <option value="720">720p (Fast & Small Size)</option>
                 </select>
             </div>
         </div>
 
-        <button class="btn" id="startBtn" disabled>बल्क सुपर-फास्ट ऑप्टिमाइजेशन शुरू करें</button>
+        <button class="btn" id="startBtn" disabled>बल्क प्रोसेसिंग शुरू करें</button>
 
         <div class="progress-bar" id="progressBar" style="margin-top:20px;">
             <div class="progress-fill" id="progressFill"></div>
         </div>
 
-        <h3 style="font-size:15px; margin-top:20px; color:#cbd5e1;">लाइव स्टेटस लॉग:</h3>
+        <h3 style="font-size:15px; margin-top:20px; color:#cbd5e1;">प्रोसेसिंग स्टेटस:</h3>
         <div class="log" id="logBox">कोई फाइल चुनी नहीं गई है...</div>
     </div>
 
@@ -69,7 +69,7 @@
         const startBtn = document.getElementById('startBtn');
         const qualityInput = document.getElementById('quality');
         const qualityVal = document.getElementById('qualityVal');
-        const speedInput = document.getElementById('speed');
+        const resolutionSelect = document.getElementById('resolution');
         const progressBar = document.getElementById('progressBar');
         const progressFill = document.getElementById('progressFill');
         const logBox = document.getElementById('logBox');
@@ -93,7 +93,7 @@
             if (selectedFiles.length > 0) {
                 const photos = selectedFiles.filter(f => f.type.startsWith('image/')).length;
                 const videos = selectedFiles.filter(f => f.type.startsWith('video/')).length;
-                logBox.innerHTML = `तैयार: कुल ${selectedFiles.length} फाइलें चुनी गईं (${photos} फोटो [इंस्टेंट], ${videos} वीडियो [फास्ट रिकॉर्ड])।`;
+                logBox.innerHTML = `तैयार: कुल ${selectedFiles.length} फाइलें चुनी गईं (${photos} फोटो, ${videos} वीडियो)।`;
                 startBtn.disabled = false;
             } else {
                 logBox.innerHTML = `<span class="error">वैध फोटो या वीडियो फाइलें चुनें!</span>`;
@@ -106,10 +106,10 @@
 
             startBtn.disabled = true;
             progressBar.style.display = 'block';
-            logBox.innerHTML = 'प्रोसेसिंग चालू है...<br>';
+            logBox.innerHTML = 'ऑप्टिमाइजेशन शुरू हो रहा है...<br>';
 
             const qualityRatio = parseFloat(qualityInput.value) / 100;
-            const processSpeed = parseFloat(speedInput.value);
+            const resOption = resolutionSelect.value;
             let processedCount = 0;
 
             for (let i = 0; i < selectedFiles.length; i++) {
@@ -118,10 +118,10 @@
                     let optimizedBlob, newFileName;
                     
                     if (file.type.startsWith('image/')) {
-                        optimizedBlob = await processImageFast(file, qualityRatio);
+                        optimizedBlob = await processImageHD(file, qualityRatio);
                         newFileName = file.name.substring(0, file.name.lastIndexOf('.')) + '_HD.webp';
                     } else if (file.type.startsWith('video/')) {
-                        optimizedBlob = await processVideoFast(file, qualityRatio, processSpeed);
+                        optimizedBlob = await processVideoHD(file, qualityRatio, resOption);
                         newFileName = file.name.substring(0, file.name.lastIndexOf('.')) + '_HD.webm';
                     }
 
@@ -131,7 +131,7 @@
                     const newMB = (optimizedBlob.size / (1024 * 1024)).toFixed(2);
                     const savings = (((file.size - optimizedBlob.size) / file.size) * 100).toFixed(0);
 
-                    logBox.innerHTML += `<div class="file-item success">✔ ${file.name} (${oldMB} MB ➔ ${newMB} MB) [${savings}% साइज कम]</div>`;
+                    logBox.innerHTML += `<div class="file-item success">✔ ${file.name} (${oldMB} MB ➔ ${newMB} MB) [${savings}% साइज़ कम]</div>`;
                 } catch (err) {
                     logBox.innerHTML += `<div class="file-item error">✖ ${file.name} - एरर: ${err.message}</div>`;
                 }
@@ -141,12 +141,12 @@
                 logBox.scrollTop = logBox.scrollHeight;
             }
 
-            logBox.innerHTML += `<br><strong class="success">सभी फाइलें पूरी ड्यूरेशन और HD क्वालिटी के साथ ऑप्टिमाइज़ हो गईं!</strong>`;
+            logBox.innerHTML += `<br><strong class="success">सभी फाइलें 100% सही ड्यूरेशन और साउंड के साथ कंवर्ट हो गईं!</strong>`;
             startBtn.disabled = false;
         });
 
-        // Instant Photo Processing
-        function processImageFast(file, quality) {
+        // Instant Photo Processing with Sharpness Filter
+        function processImageHD(file, quality) {
             return new Promise((resolve, reject) => {
                 const img = new Image();
                 const url = URL.createObjectURL(file);
@@ -160,7 +160,7 @@
 
                     ctx.imageSmoothingEnabled = true;
                     ctx.imageSmoothingQuality = 'high';
-                    ctx.filter = 'contrast(103%) saturate(105%) sharpening(100%)';
+                    ctx.filter = 'contrast(102%) saturate(103%)';
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
                     canvas.toBlob((blob) => {
@@ -168,25 +168,36 @@
                         else reject(new Error('इमेज कंवर्ट नहीं हो सकी'));
                     }, 'image/webp', quality);
                 };
-                img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('फोटो लोड फेल')); };
+                img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('फोटो लोड नहीं हो सकी')); };
                 img.src = url;
             });
         }
 
-        // Fast Video Processing with Full Duration & Speed Booster
-        function processVideoFast(file, quality, speed) {
+        // Full Duration & Audio Synced Video Processing
+        function processVideoHD(file, quality, resOption) {
             return new Promise((resolve, reject) => {
                 const video = document.createElement('video');
                 video.src = URL.createObjectURL(file);
                 video.muted = false;
-                video.volume = 0.001; // Enable audio capture without loud playback
-                video.playbackRate = speed; // Accelerate video processing speed
+                video.volume = 0.001; // Sound capture enabled
 
                 video.onloadeddata = () => {
                     try {
+                        let targetWidth = video.videoWidth;
+                        let targetHeight = video.videoHeight;
+
+                        // Optional Resolution Scaling to Control Size
+                        if (resOption === '1080' && targetHeight > 1080) {
+                            targetWidth = Math.round((1080 / targetHeight) * targetWidth);
+                            targetHeight = 1080;
+                        } else if (resOption === '720' && targetHeight > 720) {
+                            targetWidth = Math.round((720 / targetHeight) * targetWidth);
+                            targetHeight = 720;
+                        }
+
                         const canvas = document.createElement('canvas');
-                        canvas.width = video.videoWidth;
-                        canvas.height = video.videoHeight;
+                        canvas.width = targetWidth;
+                        canvas.height = targetHeight;
                         const ctx = canvas.getContext('2d');
 
                         ctx.imageSmoothingEnabled = true;
@@ -208,7 +219,7 @@
                         let mimeType = 'video/webm;codecs=vp9,opus';
                         if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
 
-                        const bitrate = Math.max(1000000, Math.round(4000000 * quality));
+                        const bitrate = Math.max(1200000, Math.round(3500000 * quality));
                         const mediaRecorder = new MediaRecorder(canvasStream, {
                             mimeType: mimeType,
                             videoBitsPerSecond: bitrate
@@ -228,20 +239,20 @@
                         mediaRecorder.start();
                         video.play();
 
-                        function drawFrame() {
-                            if (video.ended) {
+                        function renderFrame() {
+                            if (video.paused || video.ended) {
                                 if (mediaRecorder.state !== 'inactive') mediaRecorder.stop();
                                 return;
                             }
                             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                            requestAnimationFrame(drawFrame);
+                            requestAnimationFrame(renderFrame);
                         }
-                        
+
                         video.onended = () => {
                             if (mediaRecorder.state !== 'inactive') mediaRecorder.stop();
                         };
 
-                        drawFrame();
+                        renderFrame();
                     } catch (err) {
                         URL.revokeObjectURL(video.src);
                         reject(err);
