@@ -24,14 +24,13 @@
         .file-item { display: flex; justify-content: space-between; margin-bottom: 6px; border-bottom: 1px solid #1e293b; padding-bottom: 4px; }
         .success { color: #4ade80; }
         .error { color: #f87171; }
-        .video-preview { display: none; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Bulk Photo & Video Optimizer Pro</h1>
         <p style="text-align:center; color:#94a3b8; font-size:14px; margin-top:-10px; margin-bottom:20px;">
-            फोटो और वीडियो दोनों को एक साथ बल्क में ऑप्टिमाइज़ करें (100% Client-Side Native Engine)
+            फोटो और वीडियो (With Audio) दोनों को एक साथ ऑप्टिमाइज़ करें
         </p>
         
         <div class="drop-zone" id="dropZone">
@@ -146,7 +145,6 @@
             startBtn.disabled = false;
         });
 
-        // Photo Processing Logic
         function processImage(file, quality) {
             return new Promise((resolve, reject) => {
                 const img = new Image();
@@ -175,13 +173,11 @@
             });
         }
 
-        // Video Processing Logic (Native Canvas + MediaRecorder)
         function processVideo(file, quality) {
             return new Promise((resolve, reject) => {
                 const video = document.createElement('video');
                 video.src = URL.createObjectURL(file);
-                video.muted = true;
-                video.playsInline = true;
+                video.volume = 0.001; // Sound enabled for stream capture
 
                 video.onloadeddata = () => {
                     try {
@@ -190,14 +186,32 @@
                         canvas.height = video.videoHeight;
                         const ctx = canvas.getContext('2d');
 
-                        const stream = canvas.captureStream(30);
-                        let mimeType = 'video/webm;codecs=vp9';
+                        const canvasStream = canvas.captureStream(30);
+
+                        let audioTrack = null;
+                        if (video.captureStream) {
+                            const videoStream = video.captureStream();
+                            if (videoStream.getAudioTracks().length > 0) {
+                                audioTrack = videoStream.getAudioTracks()[0];
+                            }
+                        } else if (video.mozCaptureStream) {
+                            const videoStream = video.mozCaptureStream();
+                            if (videoStream.getAudioTracks().length > 0) {
+                                audioTrack = videoStream.getAudioTracks()[0];
+                            }
+                        }
+
+                        if (audioTrack) {
+                            canvasStream.addTrack(audioTrack);
+                        }
+
+                        let mimeType = 'video/webm;codecs=vp9,opus';
                         if (!MediaRecorder.isTypeSupported(mimeType)) {
                             mimeType = 'video/webm';
                         }
 
                         const bitrate = Math.max(500000, Math.round(3000000 * quality));
-                        const mediaRecorder = new MediaRecorder(stream, {
+                        const mediaRecorder = new MediaRecorder(canvasStream, {
                             mimeType: mimeType,
                             videoBitsPerSecond: bitrate
                         });
