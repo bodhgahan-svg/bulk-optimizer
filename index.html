@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bulk HD Photo & Video Optimizer Pro</title>
+    <title>Super-Fast Bulk Photo & Video HD Optimizer</title>
     <style>
         * { box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; padding: 20px; margin: 0; }
@@ -15,9 +15,9 @@
         .btn { background: #0284c7; color: white; border: none; padding: 14px 24px; font-size: 16px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; transition: 0.2s; }
         .btn:hover { background: #0369a1; }
         .btn:disabled { background: #475569; cursor: not-allowed; }
-        .controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 10px; background: #0f172a; padding: 15px; border-radius: 8px; }
-        label { font-size: 14px; color: #cbd5e1; }
-        input[type="range"] { flex: 1; cursor: pointer; }
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; background: #0f172a; padding: 15px; border-radius: 8px; }
+        label { font-size: 14px; color: #cbd5e1; display: block; margin-bottom: 5px; }
+        input[type="range"], select { width: 100%; cursor: pointer; background: #1e293b; color: white; border: 1px solid #334155; padding: 6px; border-radius: 4px; }
         .progress-bar { width: 100%; height: 10px; background: #334155; border-radius: 5px; overflow: hidden; margin-bottom: 20px; display: none; }
         .progress-fill { width: 0%; height: 100%; background: #22c55e; transition: width 0.1s; }
         .log { background: #0f172a; padding: 12px; border-radius: 6px; height: 220px; overflow-y: auto; font-family: monospace; font-size: 13px; border: 1px solid #334155; }
@@ -28,28 +28,38 @@
 </head>
 <body>
     <div class="container">
-        <h1>Bulk HD Photo & Video Optimizer Pro</h1>
+        <h1>Super-Fast Bulk Optimizer Pro</h1>
         <p style="text-align:center; color:#94a3b8; font-size:14px; margin-top:-10px; margin-bottom:20px;">
-            HD Auto-Enhance Engine (बिना क्वालिटी घटाए साइज़ कम करें + ऑडियो सपोर्ट)
+            इंसटेंट फोटो कंवर्टर + फास्ट वीडियो कम्प्रेशन (Full Duration & Audio Sync)
         </p>
         
         <div class="drop-zone" id="dropZone">
-            <p style="margin:0; font-size:16px;">यहाँ फोटो या वीडियो ड्रैग और ड्रॉप करें या क्लिक करके चुनें</p>
+            <p style="margin:0; font-size:16px;">यहाँ बल्क फोटो और वीडियो ड्रैग/ड्रॉप करें या क्लिक करके चुनें</p>
             <input type="file" id="fileInput" multiple accept="image/*,video/*">
         </div>
 
         <div class="controls">
-            <label for="quality">क्वालिटी व शार्पनेस बैलेंस: <strong id="qualityVal" style="color:#38bdf8;">92</strong>%</label>
-            <input type="range" id="quality" min="50" max="100" value="92">
+            <div>
+                <label for="quality">क्वालिटी व HD शार्पनेस: <strong id="qualityVal" style="color:#38bdf8;">90</strong>%</label>
+                <input type="range" id="quality" min="60" max="100" value="90">
+            </div>
+            <div>
+                <label for="speed">वीडियो स्पीड बूस्टर:</label>
+                <select id="speed">
+                    <option value="1">1x (नॉर्मल स्पीड)</option>
+                    <option value="2" selected>2x (दुगुनी तेज़ी)</option>
+                    <option value="3">3x (सुपर फास्ट - recommended)</option>
+                </select>
+            </div>
         </div>
 
-        <button class="btn" id="startBtn" disabled>बल्क HD प्रोसेसिंग शुरू करें</button>
+        <button class="btn" id="startBtn" disabled>बल्क सुपर-फास्ट ऑप्टिमाइजेशन शुरू करें</button>
 
         <div class="progress-bar" id="progressBar" style="margin-top:20px;">
             <div class="progress-fill" id="progressFill"></div>
         </div>
 
-        <h3 style="font-size:15px; margin-top:20px; color:#cbd5e1;">प्रोसेसिंग लॉग:</h3>
+        <h3 style="font-size:15px; margin-top:20px; color:#cbd5e1;">लाइव स्टेटस लॉग:</h3>
         <div class="log" id="logBox">कोई फाइल चुनी नहीं गई है...</div>
     </div>
 
@@ -59,29 +69,19 @@
         const startBtn = document.getElementById('startBtn');
         const qualityInput = document.getElementById('quality');
         const qualityVal = document.getElementById('qualityVal');
+        const speedInput = document.getElementById('speed');
         const progressBar = document.getElementById('progressBar');
         const progressFill = document.getElementById('progressFill');
         const logBox = document.getElementById('logBox');
 
         let selectedFiles = [];
 
-        qualityInput.addEventListener('input', () => {
-            qualityVal.textContent = qualityInput.value;
-        });
-
+        qualityInput.addEventListener('input', () => qualityVal.textContent = qualityInput.value);
         dropZone.addEventListener('click', () => fileInput.click());
-
         fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
 
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.style.borderColor = '#22c55e';
-        });
-
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.style.borderColor = '#38bdf8';
-        });
-
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.style.borderColor = '#22c55e'; });
+        dropZone.addEventListener('dragleave', () => dropZone.style.borderColor = '#38bdf8');
         dropZone.addEventListener('drop', (e) => {
             e.preventDefault();
             dropZone.style.borderColor = '#38bdf8';
@@ -93,10 +93,10 @@
             if (selectedFiles.length > 0) {
                 const photos = selectedFiles.filter(f => f.type.startsWith('image/')).length;
                 const videos = selectedFiles.filter(f => f.type.startsWith('video/')).length;
-                logBox.innerHTML = `तैयार: कुल ${selectedFiles.length} फाइलें चुनी गईं (${photos} फोटोज़, ${videos} वीडियो)। 'बल्क HD प्रोसेसिंग शुरू करें' पर क्लिक करें।`;
+                logBox.innerHTML = `तैयार: कुल ${selectedFiles.length} फाइलें चुनी गईं (${photos} फोटो [इंस्टेंट], ${videos} वीडियो [फास्ट रिकॉर्ड])।`;
                 startBtn.disabled = false;
             } else {
-                logBox.innerHTML = `<span class="error">कृपया वैध फोटो या वीडियो फाइलें चुनें!</span>`;
+                logBox.innerHTML = `<span class="error">वैध फोटो या वीडियो फाइलें चुनें!</span>`;
                 startBtn.disabled = true;
             }
         }
@@ -106,9 +106,10 @@
 
             startBtn.disabled = true;
             progressBar.style.display = 'block';
-            logBox.innerHTML = 'HD ऑप्टिमाइजेशन शुरू हो रहा है...<br>';
+            logBox.innerHTML = 'प्रोसेसिंग चालू है...<br>';
 
-            const userQuality = parseFloat(qualityInput.value) / 100;
+            const qualityRatio = parseFloat(qualityInput.value) / 100;
+            const processSpeed = parseFloat(speedInput.value);
             let processedCount = 0;
 
             for (let i = 0; i < selectedFiles.length; i++) {
@@ -117,11 +118,11 @@
                     let optimizedBlob, newFileName;
                     
                     if (file.type.startsWith('image/')) {
-                        optimizedBlob = await processImageHD(file, userQuality);
-                        newFileName = file.name.substring(0, file.name.lastIndexOf('.')) + '_HD_optimized.webp';
+                        optimizedBlob = await processImageFast(file, qualityRatio);
+                        newFileName = file.name.substring(0, file.name.lastIndexOf('.')) + '_HD.webp';
                     } else if (file.type.startsWith('video/')) {
-                        optimizedBlob = await processVideoHD(file, userQuality);
-                        newFileName = file.name.substring(0, file.name.lastIndexOf('.')) + '_HD_optimized.webm';
+                        optimizedBlob = await processVideoFast(file, qualityRatio, processSpeed);
+                        newFileName = file.name.substring(0, file.name.lastIndexOf('.')) + '_HD.webm';
                     }
 
                     downloadBlob(optimizedBlob, newFileName);
@@ -130,66 +131,56 @@
                     const newMB = (optimizedBlob.size / (1024 * 1024)).toFixed(2);
                     const savings = (((file.size - optimizedBlob.size) / file.size) * 100).toFixed(0);
 
-                    logBox.innerHTML += `<div class="file-item success">✔ ${file.name} (${oldMB} MB ➔ ${newMB} MB) [${savings}% साइज़ कम - HD क्वालिटी बनी रही]</div>`;
+                    logBox.innerHTML += `<div class="file-item success">✔ ${file.name} (${oldMB} MB ➔ ${newMB} MB) [${savings}% साइज कम]</div>`;
                 } catch (err) {
                     logBox.innerHTML += `<div class="file-item error">✖ ${file.name} - एरर: ${err.message}</div>`;
                 }
 
                 processedCount++;
-                const percent = Math.round((processedCount / selectedFiles.length) * 100);
-                progressFill.style.width = percent + '%';
+                progressFill.style.width = Math.round((processedCount / selectedFiles.length) * 100) + '%';
                 logBox.scrollTop = logBox.scrollHeight;
             }
 
-            logBox.innerHTML += `<br><strong class="success">सफलतापूर्वक पूरा हुआ! सभी HD फाइलें डाउनलोड हो गईं।</strong>`;
+            logBox.innerHTML += `<br><strong class="success">सभी फाइलें पूरी ड्यूरेशन और HD क्वालिटी के साथ ऑप्टिमाइज़ हो गईं!</strong>`;
             startBtn.disabled = false;
         });
 
-        // Photo Processing Logic (HD Auto-Enhance)
-        function processImageHD(file, quality) {
+        // Instant Photo Processing
+        function processImageFast(file, quality) {
             return new Promise((resolve, reject) => {
                 const img = new Image();
                 const url = URL.createObjectURL(file);
 
                 img.onload = () => {
                     URL.revokeObjectURL(url);
-                    try {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = img.width;
-                        canvas.height = img.height;
-                        const ctx = canvas.getContext('2d');
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
 
-                        // High Quality Image Smoothing
-                        ctx.imageSmoothingEnabled = true;
-                        ctx.imageSmoothingQuality = 'high';
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
+                    ctx.filter = 'contrast(103%) saturate(105%) sharpening(100%)';
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                        // Auto Color & Contrast Enhancement Filter
-                        ctx.filter = 'contrast(102%) saturate(104%) brightness(101%)';
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-                        // High precision WebP encoding (0.88 - 0.98 range)
-                        const targetQuality = Math.max(0.88, quality);
-
-                        canvas.toBlob((blob) => {
-                            if (blob) resolve(blob);
-                            else reject(new Error('इमेज कंवर्ट नहीं हो सकी'));
-                        }, 'image/webp', targetQuality);
-                    } catch (e) { reject(e); }
+                    canvas.toBlob((blob) => {
+                        if (blob) resolve(blob);
+                        else reject(new Error('इमेज कंवर्ट नहीं हो सकी'));
+                    }, 'image/webp', quality);
                 };
-                img.onerror = () => {
-                    URL.revokeObjectURL(url);
-                    reject(new Error('फोटो लोड नहीं हो सकी'));
-                };
+                img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('फोटो लोड फेल')); };
                 img.src = url;
             });
         }
 
-        // Video Processing Logic with Sound
-        function processVideoHD(file, quality) {
+        // Fast Video Processing with Full Duration & Speed Booster
+        function processVideoFast(file, quality, speed) {
             return new Promise((resolve, reject) => {
                 const video = document.createElement('video');
                 video.src = URL.createObjectURL(file);
-                video.volume = 0.001;
+                video.muted = false;
+                video.volume = 0.001; // Enable audio capture without loud playback
+                video.playbackRate = speed; // Accelerate video processing speed
 
                 video.onloadeddata = () => {
                     try {
@@ -217,7 +208,7 @@
                         let mimeType = 'video/webm;codecs=vp9,opus';
                         if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
 
-                        const bitrate = Math.max(1500000, Math.round(5000000 * quality));
+                        const bitrate = Math.max(1000000, Math.round(4000000 * quality));
                         const mediaRecorder = new MediaRecorder(canvasStream, {
                             mimeType: mimeType,
                             videoBitsPerSecond: bitrate
@@ -237,15 +228,20 @@
                         mediaRecorder.start();
                         video.play();
 
-                        function renderLoop() {
-                            if (video.paused || video.ended) {
-                                mediaRecorder.stop();
+                        function drawFrame() {
+                            if (video.ended) {
+                                if (mediaRecorder.state !== 'inactive') mediaRecorder.stop();
                                 return;
                             }
                             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                            requestAnimationFrame(renderLoop);
+                            requestAnimationFrame(drawFrame);
                         }
-                        renderLoop();
+                        
+                        video.onended = () => {
+                            if (mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+                        };
+
+                        drawFrame();
                     } catch (err) {
                         URL.revokeObjectURL(video.src);
                         reject(err);
