@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Photo & Video Media Optimizer Pro</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; padding: 20px; margin: 0; }
+        .container { max-width: 850px; margin: 0 auto; background: #1e293b; padding: 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        h1 { text-align: center; color: #38bdf8; margin-top: 0; }
+        .drop-zone { border: 2px dashed #38bdf8; border-radius: 8px; padding: 30px; text-align: center; background: #0f172a; cursor: pointer; margin-bottom: 20px; transition: 0.2s; }
+        .drop-zone:hover { background: #1b2735; }
+        input[type="file"] { display: none; }
+        .btn { background: #0284c7; color: white; border: none; padding: 14px 24px; font-size: 16px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; transition: 0.2s; }
+        .btn:hover { background: #0369a1; }
+        .btn:disabled { background: #475569; cursor: not-allowed; }
+        .controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 10px; background: #0f172a; padding: 15px; border-radius: 8px; }
+        label { font-size: 14px; color: #cbd5e1; }
+        input[type="range"] { flex: 1; cursor: pointer; }
+        .progress-bar { width: 100%; height: 10px; background: #334155; border-radius: 5px; overflow: hidden; margin-bottom: 20px; display: none; }
+        .progress-fill { width: 0%; height: 100%; background: #22c55e; transition: width 0.1s; }
+        .log { background: #0f172a; padding: 12px; border-radius: 6px; height: 220px; overflow-y: auto; font-family: monospace; font-size: 13px; border: 1px solid #334155; }
+        .file-item { display: flex; justify-content: space-between; margin-bottom: 6px; border-bottom: 1px solid #1e293b; padding-bottom: 4px; }
+        .success { color: #4ade80; }
+        .error { color: #f87171; }
+        .video-preview { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bulk Photo & Video Optimizer Pro</h1>
+        <p style="text-align:center; color:#94a3b8; font-size:14px; margin-top:-10px; margin-bottom:20px;">
+            फोटो और वीडियो दोनों को एक साथ बल्क में ऑप्टिमाइज़ करें (100% Client-Side Native Engine)
+        </p>
+        
+        <div class="drop-zone" id="dropZone">
+            <p style="margin:0; font-size:16px;">यहाँ फोटो या वीडियो ड्रैग और ड्रॉप करें या क्लिक करके चुनें</p>
+            <input type="file" id="fileInput" multiple accept="image/*,video/*">
+        </div>
+
+        <div class="controls">
+            <label for="quality">ऑप्टिमाइजेशन लेवल: <strong id="qualityVal" style="color:#38bdf8;">80</strong>%</label>
+            <input type="range" id="quality" min="20" max="100" value="80">
+        </div>
+
+        <button class="btn" id="startBtn" disabled>बल्क प्रोसेसिंग शुरू करें (Photos & Videos)</button>
+
+        <div class="progress-bar" id="progressBar" style="margin-top:20px;">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <h3 style="font-size:15px; margin-top:20px; color:#cbd5e1;">प्रोसेसिंग लॉग:</h3>
+        <div class="log" id="logBox">कोई फाइल चुनी नहीं गई है...</div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const startBtn = document.getElementById('startBtn');
+        const qualityInput = document.getElementById('quality');
+        const qualityVal = document.getElementById('qualityVal');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const logBox = document.getElementById('logBox');
+
+        let selectedFiles = [];
+
+        qualityInput.addEventListener('input', () => {
+            qualityVal.textContent = qualityInput.value;
+        });
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#22c55e';
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.style.borderColor = '#38bdf8';
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#38bdf8';
+            handleFiles(e.dataTransfer.files);
+        });
+
+        function handleFiles(files) {
+            selectedFiles = Array.from(files).filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'));
+            if (selectedFiles.length > 0) {
+                const photos = selectedFiles.filter(f => f.type.startsWith('image/')).length;
+                const videos = selectedFiles.filter(f => f.type.startsWith('video/')).length;
+                logBox.innerHTML = `तैयार: कुल ${selectedFiles.length} फाइलें चुनी गईं (${photos} फोटोज़, ${videos} वीडियो)। 'बल्क प्रोसेसिंग शुरू करें' पर क्लिक करें।`;
+                startBtn.disabled = false;
+            } else {
+                logBox.innerHTML = `<span class="error">कृपया वैध फोटो या वीडियो फाइलें चुनें!</span>`;
+                startBtn.disabled = true;
+            }
+        }
+
+        startBtn.addEventListener('click', async () => {
+            if (selectedFiles.length === 0) return;
+
+            startBtn.disabled = true;
+            progressBar.style.display = 'block';
+            logBox.innerHTML = 'प्रोसेसिंग शुरू हो रही है...<br>';
+
+            const qualityRatio = parseFloat(qualityInput.value) / 100;
+            let processedCount = 0;
+
+            for (let i = 0; i < selectedFiles.length; i++) {
+                const file = selectedFiles[i];
+                try {
+                    let optimizedBlob, newFileName;
+                    
+                    if (file.type.startsWith('image/')) {
+                        optimizedBlob = await processImage(file, qualityRatio);
+                        newFileName = file.name.substring(0, file.name.lastIndexOf('.')) + '_optimized.webp';
+                    } else if (file.type.startsWith('video/')) {
+                        optimizedBlob = await processVideo(file, qualityRatio);
+                        newFileName = file.name.substring(0, file.name.lastIndexOf('.')) + '_optimized.webm';
+                    }
+
+                    downloadBlob(optimizedBlob, newFileName);
+                    
+                    const oldMB = (file.size / (1024 * 1024)).toFixed(2);
+                    const newMB = (optimizedBlob.size / (1024 * 1024)).toFixed(2);
+                    const savings = (((file.size - optimizedBlob.size) / file.size) * 100).toFixed(0);
+
+                    logBox.innerHTML += `<div class="file-item success">✔ ${file.name} (${oldMB} MB ➔ ${newMB} MB) [${savings}% साइज कम]</div>`;
+                } catch (err) {
+                    logBox.innerHTML += `<div class="file-item error">✖ ${file.name} - एरर: ${err.message}</div>`;
+                }
+
+                processedCount++;
+                const percent = Math.round((processedCount / selectedFiles.length) * 100);
+                progressFill.style.width = percent + '%';
+                logBox.scrollTop = logBox.scrollHeight;
+            }
+
+            logBox.innerHTML += `<br><strong class="success">सफलतापूर्वक पूरा हुआ! सभी फाइलें ऑप्टिमाइज़ होकर डाउनलोड हो गईं।</strong>`;
+            startBtn.disabled = false;
+        });
+
+        // Photo Processing Logic
+        function processImage(file, quality) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                const url = URL.createObjectURL(file);
+
+                img.onload = () => {
+                    URL.revokeObjectURL(url);
+                    try {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+
+                        canvas.toBlob((blob) => {
+                            if (blob) resolve(blob);
+                            else reject(new Error('इमेज कंवर्ट नहीं हो सकी'));
+                        }, 'image/webp', quality);
+                    } catch (e) { reject(e); }
+                };
+                img.onerror = () => {
+                    URL.revokeObjectURL(url);
+                    reject(new Error('फोटो लोड नहीं हो सकी'));
+                };
+                img.src = url;
+            });
+        }
+
+        // Video Processing Logic (Native Canvas + MediaRecorder)
+        function processVideo(file, quality) {
+            return new Promise((resolve, reject) => {
+                const video = document.createElement('video');
+                video.src = URL.createObjectURL(file);
+                video.muted = true;
+                video.playsInline = true;
+
+                video.onloadeddata = () => {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        const ctx = canvas.getContext('2d');
+
+                        const stream = canvas.captureStream(30);
+                        let mimeType = 'video/webm;codecs=vp9';
+                        if (!MediaRecorder.isTypeSupported(mimeType)) {
+                            mimeType = 'video/webm';
+                        }
+
+                        const bitrate = Math.max(500000, Math.round(3000000 * quality));
+                        const mediaRecorder = new MediaRecorder(stream, {
+                            mimeType: mimeType,
+                            videoBitsPerSecond: bitrate
+                        });
+
+                        const chunks = [];
+                        mediaRecorder.ondataavailable = (e) => {
+                            if (e.data.size > 0) chunks.push(e.data);
+                        };
+
+                        mediaRecorder.onstop = () => {
+                            const blob = new Blob(chunks, { type: 'video/webm' });
+                            URL.revokeObjectURL(video.src);
+                            resolve(blob);
+                        };
+
+                        mediaRecorder.start();
+                        video.play();
+
+                        function renderLoop() {
+                            if (video.paused || video.ended) {
+                                mediaRecorder.stop();
+                                return;
+                            }
+                            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                            requestAnimationFrame(renderLoop);
+                        }
+                        renderLoop();
+                    } catch (err) {
+                        URL.revokeObjectURL(video.src);
+                        reject(err);
+                    }
+                };
+
+                video.onerror = () => {
+                    URL.revokeObjectURL(video.src);
+                    reject(new Error('वीडियो लोड नहीं हो सका'));
+                };
+            });
+        }
+
+        function downloadBlob(blob, filename) {
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
+</body>
+</html>
